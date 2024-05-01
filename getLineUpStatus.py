@@ -1,4 +1,5 @@
 import tkinter as tk
+from datetime import datetime
 import requests
 import json
 import logging
@@ -10,18 +11,25 @@ logging.basicConfig(level=logging.INFO,
 
 
 class DataApp(tk.Tk):
-    def __init__(self):
+    def __init__(self, update_interval):
         super().__init__()
         self.title("Line Counter")
         self.geometry("200x100")
 
         self.label = tk.Label(self, text="Loading...", font=("Arial", 16))
         self.label.pack(pady=20)
+        self.update_interval = update_interval
 
-        # File to save the data
-        self.log_file = "line_data.txt"
+        # Get the current date
+        current_date = datetime.now()
 
-        self.update_data()
+        # Format the date as mm_dd_yyyy
+        formatted_date = current_date.strftime('%m_%d_%Y')
+
+        # Use the formatted date in the log file name
+        self.log_file = f"{formatted_date}.txt"
+
+        self.update_data(self.update_interval)
 
     def get_total_size(self, json_data):
         # Load the JSON data if it's provided as a string
@@ -51,7 +59,7 @@ class DataApp(tk.Tk):
         with open(self.log_file, "a") as file:
             file.write(f"{timestamp}, {size}\n")
 
-    def update_data(self):
+    def update_data(self, interval_minutes):
         try:
             json_data = self.fetch_data()
             size = self.get_total_size(json_data)
@@ -61,8 +69,9 @@ class DataApp(tk.Tk):
             logging.error(f"Error fetching or processing data: {e}")
             self.label.config(text="Error loading data")
 
-        self.after(60000, self.update_data)  # Schedule the update every minute
+        interval_ms = interval_minutes * 60000
+        self.after(interval_ms, lambda: self.update_data(interval_minutes))
 
 
-app = DataApp()
+app = DataApp(5)
 app.mainloop()
