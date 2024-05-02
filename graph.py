@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import sys
 from datetime import datetime
 
 
@@ -28,7 +29,7 @@ def plot_waitlist_data(lines):
     plt.show()
 
 
-def bar_graph(lines):
+def bar_graph(lines, diagram_file_name):
     times = []
     waitlist_lengths = []
 
@@ -51,14 +52,21 @@ def bar_graph(lines):
     plt.title('Waitlist Length vs Time (Bar Graph)')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
+    plt.savefig(diagram_file_name)
 
-
+diagram_file_name = ""
 data = ""
-with open("line_data.txt") as file:
-    data = file.readlines()
+file_name = ""
+if len(sys.argv) < 2: 
+    file_name = "line_data.txt"
+if len(sys.argv) < 3:
+    diagram_file_name = "diagram.png"
 
+file_name = sys.argv[1]
+diagram_file_name = sys.argv[2]
+with open(file_name) as file:
+    data = file.readlines()
 
 # plot_waitlist_data(data)
 
-bar_graph(data)
+bar_graph(data, diagram_file_name)
