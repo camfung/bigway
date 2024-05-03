@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def plot_waitlist_data(lines):
@@ -40,12 +40,14 @@ def bar_graph(lines, diagram_file_name):
         # Convert timestamp to datetime object
         dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         # Append the datetime and waitlist length (converted to int) to the lists
-        times.append(dt)
+        time = dt - timedelta(hours=6)
+        times.append(time)
         waitlist_lengths.append(int(length))
 
+    str_times = [time.strftime("%H:%M") for time in times]
     # Create a bar graph
     plt.figure(figsize=(12, 6))
-    plt.bar(times, waitlist_lengths, width=0.0007,
+    plt.bar(str_times, waitlist_lengths, width=0.03,
             align='center', color='blue')
     plt.xlabel('Time')
     plt.ylabel('Waitlist Length')
@@ -54,10 +56,11 @@ def bar_graph(lines, diagram_file_name):
     plt.tight_layout()
     plt.savefig(diagram_file_name)
 
+
 diagram_file_name = ""
 data = ""
 file_name = ""
-if len(sys.argv) < 2: 
+if len(sys.argv) < 2:
     file_name = "line_data.txt"
 if len(sys.argv) < 3:
     diagram_file_name = "diagram.png"
